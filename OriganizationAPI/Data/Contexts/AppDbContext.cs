@@ -1,9 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using OriganizationAPI.Models;
 
 namespace OriganizationAPI.Data.Contexts
 {
-	public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
+	public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbContext<AppUser>(options)
 	{
 		public DbSet<Event> Events { get; set; }
 		public DbSet<Organizer> Organizers { get; set; }

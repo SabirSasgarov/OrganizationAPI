@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using Microsoft.AspNetCore.Http;
+using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OriganizationAPI.Data.Contexts;
-using OriganizationAPI.Dtos.EventDtos;
 using OriganizationAPI.Dtos.OrganizerDtos;
 using OriganizationAPI.Extensions;
 using OriganizationAPI.Models;
@@ -13,7 +13,10 @@ namespace OriganizationAPI.Controllers
 {
 	[Route("api/[controller]")]
 	[ApiController]
-	public class OrganizerController(AppDbContext context, IMapper mapper) : ControllerBase
+	[Authorize(Roles = "Admin")]
+	public class OrganizerController(AppDbContext context,
+		IMapper mapper,
+		IValidator<OrganizerCreateDto> organizerValidationRules) : ControllerBase
 	{
 		[HttpGet]
 		public async Task<IActionResult> Get()
@@ -26,6 +29,15 @@ namespace OriganizationAPI.Controllers
 		[HttpPost]
 		public async Task<IActionResult> Post([FromForm] OrganizerCreateDto organizerCreateDto)
 		{
+			if(organizerValidationRules != null)
+			{
+				var validationResult = await organizerValidationRules.ValidateAsync(organizerCreateDto);
+				if (!validationResult.IsValid)
+				{
+					return BadRequest(validationResult.Errors);
+				}
+			}
+
 			if (await context.Organizers.AnyAsync(e => e.Name == organizerCreateDto.Name))
 			{
 				return BadRequest("A organizer with the given name already exists!");

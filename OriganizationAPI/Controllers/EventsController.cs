@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OriganizationAPI.Data.Contexts;
@@ -12,7 +13,9 @@ namespace OriganizationAPI.Controllers
 {
 	[Route("api/[controller]")]
 	[ApiController]
-	public class EventsController(AppDbContext context, IMapper mapper) : ControllerBase
+	public class EventsController(AppDbContext context,
+		IMapper mapper,
+		IValidator<EventCreateDto> validationRules) : ControllerBase
 	{
 		[HttpGet]
 		public async Task<IActionResult> Get()
@@ -26,6 +29,12 @@ namespace OriganizationAPI.Controllers
 		[HttpPost]
 		public async Task<IActionResult> Post([FromForm] EventCreateDto eventCreateDto)
 		{
+			var validationResult = await validationRules.ValidateAsync(eventCreateDto);
+			if (!validationResult.IsValid)
+			{
+				return BadRequest(validationResult.Errors);
+			}
+
 			if (await context.Events.AnyAsync(e => e.Title == eventCreateDto.Title))
 			{
 				return BadRequest("A event with the given title already exists!");
