@@ -1,8 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using OriganizationAPI.Models;
-
-namespace OriganizationAPI.Data.Configurations
+﻿namespace OriganizationAPI.Data.Configurations
 {
 	public class TicketConfiguration : IEntityTypeConfiguration<Ticket>
 	{

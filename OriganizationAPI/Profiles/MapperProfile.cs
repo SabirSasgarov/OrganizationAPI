@@ -1,11 +1,4 @@
-﻿using AutoMapper;
-using OriganizationAPI.Dtos.EventDtos;
-using OriganizationAPI.Dtos.OrganizerDtos;
-using OriganizationAPI.Dtos.TicketDtos;
-using OriganizationAPI.Extensions;
-using OriganizationAPI.Models;
-
-namespace OriganizationAPI.Profiles
+﻿namespace OriganizationAPI.Profiles
 {
 	public class MapperProfile : Profile
 	{

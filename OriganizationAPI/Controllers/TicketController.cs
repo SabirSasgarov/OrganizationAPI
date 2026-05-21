@@ -1,15 +1,4 @@
-﻿using AutoMapper;
-using AutoMapper.QueryableExtensions;
-using FluentValidation;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using OriganizationAPI.Data.Contexts;
-using OriganizationAPI.Dtos.OrganizerDtos;
-using OriganizationAPI.Dtos.TicketDtos;
-using OriganizationAPI.Models;
-
-namespace OriganizationAPI.Controllers
+﻿namespace OriganizationAPI.Controllers
 {
 	[Route("api/[controller]")]
 	[ApiController]

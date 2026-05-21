@@ -1,18 +1,4 @@
-﻿using FluentValidation;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
-using OriganizationAPI.Dtos.AccountDtos;
-using OriganizationAPI.Models;
-using OriganizationAPI.Services;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-
-namespace OriganizationAPI.Controllers
+﻿namespace OriganizationAPI.Controllers
 {
 	[Route("api/[controller]")]
 	[ApiController]
@@ -20,17 +6,10 @@ namespace OriganizationAPI.Controllers
 		IValidator<RegisterDto> registerValidationRules,
 		IValidator<LoginDto> loginValidationRules,
 		UserManager<AppUser> userManager,
-		RoleManager<IdentityRole> roleManager,
+		//RoleManager<IdentityRole> roleManager,
 		JwtService jwtService)
 		: ControllerBase
 	{
-		[HttpGet]
-		public async Task<IActionResult> Get()
-		{
-			var users = await userManager.Users.ToListAsync();
-			return Ok(users);
-		}
-
 		[HttpPost("register")]
 		public async Task<IActionResult> Register([FromForm] RegisterDto registerDto)
 		{
@@ -67,35 +46,28 @@ namespace OriganizationAPI.Controllers
 			if (!passwordValid)
 				return BadRequest("Invalid username or password.");
 
-			
-			//dsajduhajisdauisdjajsd
-
 			string tokenString = jwtService.GenerateToken(user, await userManager.GetRolesAsync(user));
+			await userManager.AddToRoleAsync(user, "Member");
 
 			return Ok(new { Token = tokenString });
 		}
-		[Authorize]
-		[HttpGet("profile")]
-		public async Task<IActionResult> GetProfile()
-		{
-			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-			if(userId == null)
-				return Unauthorized("User ID not found in token.");
-			var user = await userManager.FindByIdAsync(userId);
-			if(user == null)
-				return NotFound("User not found.");
-			return Ok(new { FullName = user.FullName, UserName = user.UserName, Email = user.Email });
-		}
+		
+		#region add static roles
+		//[Authorize(Roles = "Admin")]
+		//[HttpPost("roles")]
+		//public async Task<IActionResult> AddRoles()
+		//{	
+		//	await roleManager.CreateAsync(new IdentityRole { Name = "Admin" });
+		//	await roleManager.CreateAsync(new IdentityRole { Name = "Member" });
+
+		//	return Ok("Roles created successfully.");
+		//}
+		#endregion
 
 
-		[HttpPost("roles")]
-		public async Task<IActionResult> AddRoles()
-		{	
-			await roleManager.CreateAsync(new IdentityRole { Name = "Admin" });
-			await roleManager.CreateAsync(new IdentityRole { Name = "Member" });
-
-			return Ok("Roles created successfully.");
-		}
-
+		// reset password
+		// confirmation email
+		// forget password
+		// refresh token
 	}
 }

@@ -1,8 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
-using OriganizationAPI.Models;
-
-namespace OriganizationAPI.Data.Contexts
+﻿namespace OriganizationAPI.Data.Contexts
 {
 	public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbContext<AppUser>(options)
 	{

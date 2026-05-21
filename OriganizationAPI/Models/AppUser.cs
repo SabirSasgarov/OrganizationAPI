@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-
-namespace OriganizationAPI.Models
+﻿namespace OriganizationAPI.Models
 {
 	public class AppUser : IdentityUser
 	{

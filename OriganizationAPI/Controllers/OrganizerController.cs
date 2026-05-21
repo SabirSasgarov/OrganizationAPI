@@ -1,15 +1,4 @@
-﻿using AutoMapper;
-using AutoMapper.QueryableExtensions;
-using FluentValidation;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using OriganizationAPI.Data.Contexts;
-using OriganizationAPI.Dtos.OrganizerDtos;
-using OriganizationAPI.Extensions;
-using OriganizationAPI.Models;
-
-namespace OriganizationAPI.Controllers
+﻿namespace OriganizationAPI.Controllers
 {
 	[Route("api/[controller]")]
 	[ApiController]
@@ -26,6 +15,7 @@ namespace OriganizationAPI.Controllers
 				.ToListAsync();
 			return Ok(organizers);
 		}
+		[Authorize(Roles = "Admin")]
 		[HttpPost]
 		public async Task<IActionResult> Post([FromForm] OrganizerCreateDto organizerCreateDto)
 		{
@@ -37,6 +27,7 @@ namespace OriganizationAPI.Controllers
 					return BadRequest(validationResult.Errors);
 				}
 			}
+			
 
 			if (await context.Organizers.AnyAsync(e => e.Name == organizerCreateDto.Name))
 			{
@@ -47,7 +38,8 @@ namespace OriganizationAPI.Controllers
 			await context.SaveChangesAsync();
 			return Created();
 		}
-		[HttpPost("{id}/logo")]
+		[Authorize(Roles = "Admin")]
+		[HttpPatch("{id}/logo")]
 		public async Task<IActionResult> Post(int id, IFormFile logo)
 		{
 			if (logo == null) return BadRequest("Choose a file!");

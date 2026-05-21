@@ -1,12 +1,4 @@
-﻿using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
-using OriganizationAPI.Models;
-using System.Data;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-
-namespace OriganizationAPI.Services
+﻿namespace OriganizationAPI.Services
 {
 	public class JwtService(IOptions<JwtSetting> jwtOptions)
 	{
@@ -14,9 +6,9 @@ namespace OriganizationAPI.Services
 		{
 			var claims = new List<Claim>
 			{
-				new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-				new Claim(ClaimTypes.Name, user.UserName!),
-				new Claim("FullName", user.FullName!)
+				new (ClaimTypes.NameIdentifier, user.Id.ToString()),
+				new (ClaimTypes.Name, user.UserName!),
+				new ("FullName", user.FullName!)
 			};
 
 
@@ -25,17 +17,18 @@ namespace OriganizationAPI.Services
 			var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSetting.Key));
 			var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-			var token = new JwtSecurityToken(
+			var tokenDescriptor = new JwtSecurityToken(
 				issuer: jwtSetting.Issuer,
 				audience: jwtSetting.Audience,
 				claims: claims,
-				expires: DateTime.Now.AddSeconds(jwtSetting.Expire),
+				expires: DateTime.Now.AddMinutes(jwtSetting.Expire),
 				signingCredentials: creds
 				);
 
-			var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+			var tokenHandler = new JwtSecurityTokenHandler();
+			var jwtToken = tokenHandler.WriteToken(tokenDescriptor);
 
-			return tokenString;
+			return jwtToken;
 		}
 	}
 }

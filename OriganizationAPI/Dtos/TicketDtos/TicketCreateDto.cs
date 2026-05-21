@@ -1,9 +1,4 @@
-﻿using FluentValidation;
-using Microsoft.Identity.Client;
-using OriganizationAPI.Dtos.EventDtos;
-using OriganizationAPI.Models;
-
-namespace OriganizationAPI.Dtos.TicketDtos
+﻿namespace OriganizationAPI.Dtos.TicketDtos
 {
 	public class TicketCreateDto
 	{

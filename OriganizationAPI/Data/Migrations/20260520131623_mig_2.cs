@@ -1,9 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
-
-#nullable disable
-
-namespace OriganizationAPI.Data.Migrations
+﻿namespace OriganizationAPI.Data.Migrations
 {
     /// <inheritdoc />
     public partial class mig_2 : Migration

@@ -1,6 +1,4 @@
-﻿using OriganizationAPI.Models.Common;
-
-namespace OriganizationAPI.Models
+﻿namespace OriganizationAPI.Models
 {
 	public class Ticket : BaseEntity
 	{

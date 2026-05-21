@@ -1,6 +1,4 @@
-﻿using FluentValidation;
-
-namespace OriganizationAPI.Dtos.EventDtos
+﻿namespace OriganizationAPI.Dtos.EventDtos
 {
 	public class EventCreateDto
 	{
@@ -29,7 +27,8 @@ namespace OriganizationAPI.Dtos.EventDtos
 				.NotEmpty().WithMessage("Location is required!");
 
 			RuleFor(e => e.File)
-				.Must(file => file?.Length < 2 * 1024 * 1024).WithMessage("File can not be greater than 2 MBs!");
+				.Must(file => file?.Length < 2 * 1024 * 1024).WithMessage("File can not be greater than 2 MBs!")
+				.When(e => e.File != null);
 
 		}
 	}

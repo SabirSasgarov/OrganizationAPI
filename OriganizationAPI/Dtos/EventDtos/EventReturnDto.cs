@@ -1,6 +1,4 @@
-﻿using OriganizationAPI.Models;
-
-namespace OriganizationAPI.Dtos.EventDtos
+﻿namespace OriganizationAPI.Dtos.EventDtos
 {
 	public class EventReturnDto
 	{

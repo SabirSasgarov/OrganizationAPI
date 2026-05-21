@@ -1,6 +1,4 @@
-﻿using FluentValidation;
-
-namespace OriganizationAPI.Dtos.AccountDtos
+﻿namespace OriganizationAPI.Dtos.AccountDtos
 {
 	public class RegisterDto
 	{

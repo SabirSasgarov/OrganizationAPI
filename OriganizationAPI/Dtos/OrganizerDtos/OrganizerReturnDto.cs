@@ -1,6 +1,4 @@
-﻿using OriganizationAPI.Models;
-
-namespace OriganizationAPI.Dtos.OrganizerDtos
+﻿namespace OriganizationAPI.Dtos.OrganizerDtos
 {
 	public class OrganizerReturnDto
 	{

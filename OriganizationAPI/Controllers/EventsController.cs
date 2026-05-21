@@ -1,15 +1,4 @@
-﻿using AutoMapper;
-using AutoMapper.QueryableExtensions;
-using FluentValidation;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using OriganizationAPI.Data.Contexts;
-using OriganizationAPI.Dtos.EventDtos;
-using OriganizationAPI.Dtos.TicketDtos;
-using OriganizationAPI.Extensions;
-using OriganizationAPI.Models;
-
-namespace OriganizationAPI.Controllers
+﻿namespace OriganizationAPI.Controllers
 {
 	[Route("api/[controller]")]
 	[ApiController]
@@ -26,6 +15,7 @@ namespace OriganizationAPI.Controllers
 
 			return Ok(events);
 		}
+		[Authorize]
 		[HttpPost]
 		public async Task<IActionResult> Post([FromForm] EventCreateDto eventCreateDto)
 		{
@@ -33,6 +23,12 @@ namespace OriganizationAPI.Controllers
 			if (!validationResult.IsValid)
 			{
 				return BadRequest(validationResult.Errors);
+			}
+
+			var existingOrganizer = await context.Organizers.FindAsync(eventCreateDto.OrganizerId);
+			if(existingOrganizer == null)
+			{
+				return NotFound("There is no such organizer with given id!");
 			}
 
 			if (await context.Events.AnyAsync(e => e.Title == eventCreateDto.Title))
@@ -44,7 +40,8 @@ namespace OriganizationAPI.Controllers
 			await context.SaveChangesAsync();
 			return Created();
 		}
-		[HttpPost("{id}/banner")]
+		[Authorize]
+		[HttpPatch("{id}/banner")]
 		public async Task<IActionResult> Post(int id,IFormFile banner)
 		{
 			if (banner == null) return BadRequest("Choose a file!");
@@ -89,9 +86,9 @@ namespace OriganizationAPI.Controllers
 
 			return Ok(eventReturnDto);
 		}
-
+		[Authorize]
 		[HttpPost("{id}/tickets")]
-		public async Task<IActionResult> Post(int id, TicketCreateDto ticketCreateDto)
+		public async Task<IActionResult> Post(int id,[FromForm] TicketCreateDto ticketCreateDto)
 		{
 			var existingEvent = await context.Events
 				.Include(e => e.Tickets)
