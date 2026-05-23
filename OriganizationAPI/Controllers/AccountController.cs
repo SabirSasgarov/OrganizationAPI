@@ -5,6 +5,8 @@
 	public class AccountController(
 		IValidator<RegisterDto> registerValidationRules,
 		IValidator<LoginDto> loginValidationRules,
+		IValidator<ResetPasswordDto> resetPasswordValidationRules,
+		IValidator<ForgetPasswordDto> forgetPasswordValidationRules,
 		UserManager<AppUser> userManager,
 		//RoleManager<IdentityRole> roleManager,
 		JwtService jwtService)
@@ -23,12 +25,14 @@
 				UserName = registerDto.UserName,
 				Email = registerDto.Email
 			};
+			var confirmEmailToken = await userManager.GenerateEmailConfirmationTokenAsync(user);
 			var createResult = await userManager.CreateAsync(user, registerDto.Password);
 			if (!createResult.Succeeded)
 				return BadRequest(createResult.Errors);
 
 			await userManager.AddToRoleAsync(user, "Member");
-			return Ok("Account created successfully.");
+
+			return Ok($"{confirmEmailToken}\nAccount created successfully.");
 		}
 
 		[HttpPost("login")]
@@ -51,7 +55,56 @@
 
 			return Ok(new { Token = tokenString });
 		}
-		
+		[Authorize]
+		[HttpPost("reset_password")]
+		public async Task<IActionResult> ResetPassword([FromForm] ResetPasswordDto resetPasswordDto)
+		{
+			if(resetPasswordDto == null)
+				return BadRequest("Invalid data.");
+			var validationResult = await resetPasswordValidationRules.ValidateAsync(resetPasswordDto);
+			if (!validationResult.IsValid)
+				return BadRequest(validationResult.Errors);
+
+			string id = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)!.Value;
+			var user = await userManager.FindByIdAsync(id);
+			if (user == null)
+				return BadRequest("User not found.");
+			var changePasswordResult = await userManager.ChangePasswordAsync(user, resetPasswordDto.Password, resetPasswordDto.NewPassword);
+			if (!changePasswordResult.Succeeded)
+				return BadRequest(changePasswordResult.Errors);
+
+			return Ok("Password reset successfully.");
+		}
+		[HttpPost("forget_password")]
+		public async Task<IActionResult> ForgetPassword([FromForm] ForgetPasswordDto forgetPasswordDto)
+		{
+			var validationResult = await forgetPasswordValidationRules.ValidateAsync(forgetPasswordDto);
+			if (!validationResult.IsValid)
+				return BadRequest(validationResult.Errors);
+
+			var user = await userManager.FindByEmailAsync(forgetPasswordDto.Email);
+			if (user == null)
+				return BadRequest("User not found.");
+
+			var token = await userManager.GeneratePasswordResetTokenAsync(user);
+			// send email with token
+			return Ok("Password reset token generated. Please check your email.");
+		}
+
+
+		[HttpPost("confirm_email")]
+		public async Task<IActionResult> ConfirmEmail(string email, string token)
+		{
+			var user = await userManager.FindByEmailAsync(email);
+			if (user == null)
+				return BadRequest("User not found.");
+			var result = await userManager.ConfirmEmailAsync(user, token);
+			if (!result.Succeeded)
+				return BadRequest("Email confirmation failed.");
+			return Ok("Email confirmed successfully.");
+		}
+
+
 		#region add static roles
 		//[Authorize(Roles = "Admin")]
 		//[HttpPost("roles")]
@@ -64,8 +117,6 @@
 		//}
 		#endregion
 
-
-		// reset password
 		// confirmation email
 		// forget password
 		// refresh token
