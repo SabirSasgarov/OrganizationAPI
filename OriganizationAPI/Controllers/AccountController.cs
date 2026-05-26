@@ -1,4 +1,7 @@
-﻿namespace OriganizationAPI.Controllers
+﻿using Microsoft.AspNetCore.WebUtilities;
+using System.Net;
+
+namespace OriganizationAPI.Controllers
 {
 	[Route("api/[controller]")]
 	[ApiController]
@@ -8,6 +11,7 @@
 		IValidator<ResetPasswordDto> resetPasswordValidationRules,
 		IValidator<ForgetPasswordDto> forgetPasswordValidationRules,
 		UserManager<AppUser> userManager,
+		RefreshTokenService refreshTokenService,
 		//RoleManager<IdentityRole> roleManager,
 		JwtService jwtService)
 		: ControllerBase
@@ -25,10 +29,12 @@
 				UserName = registerDto.UserName,
 				Email = registerDto.Email
 			};
-			var confirmEmailToken = await userManager.GenerateEmailConfirmationTokenAsync(user);
 			var createResult = await userManager.CreateAsync(user, registerDto.Password);
 			if (!createResult.Succeeded)
 				return BadRequest(createResult.Errors);
+
+			var confirmEmailToken = await userManager.GenerateEmailConfirmationTokenAsync(user);
+			confirmEmailToken= WebUtility.UrlEncode(confirmEmailToken);
 
 			await userManager.AddToRoleAsync(user, "Member");
 
@@ -50,10 +56,17 @@
 			if (!passwordValid)
 				return BadRequest("Invalid username or password.");
 
-			string tokenString = jwtService.GenerateToken(user, await userManager.GetRolesAsync(user));
-			await userManager.AddToRoleAsync(user, "Member");
+			if (!user.EmailConfirmed)
+				return BadRequest("Verify email first!");
 
-			return Ok(new { Token = tokenString });
+			string tokenString = jwtService.GenerateToken(user, await userManager.GetRolesAsync(user));
+			user.RefreshToken = refreshTokenService.GenerateRefreshToken();
+			user.RefreshTokenExpiryTime = DateTime.UtcNow.AddMinutes(5);
+
+			await userManager.AddToRoleAsync(user, "Member");
+			await userManager.UpdateAsync(user);
+			 
+			return Ok(new { Token = tokenString, Refresh = user.RefreshToken });
 		}
 		[Authorize]
 		[HttpPost("reset_password")]
@@ -87,8 +100,11 @@
 				return BadRequest("User not found.");
 
 			var token = await userManager.GeneratePasswordResetTokenAsync(user);
+			var edncodedToken = WebUtility.UrlEncode(token);
+			
 			// send email with token
-			return Ok("Password reset token generated. Please check your email.");
+
+			return Ok($"Password reset token generated ---> {edncodedToken}. Please check your email.");
 		}
 
 
@@ -98,11 +114,43 @@
 			var user = await userManager.FindByEmailAsync(email);
 			if (user == null)
 				return BadRequest("User not found.");
-			var result = await userManager.ConfirmEmailAsync(user, token);
+
+			var decodedToken = WebUtility.UrlDecode(token);
+
+
+			var result = await userManager.ConfirmEmailAsync(user, decodedToken);
 			if (!result.Succeeded)
 				return BadRequest("Email confirmation failed.");
 			return Ok("Email confirmed successfully.");
 		}
+
+		[HttpPost("refresh-token")]
+		public async Task<IActionResult> RefreshToken(TokenRequestDto dto)
+		{
+			var user = await userManager.Users
+				.FirstOrDefaultAsync(x =>
+					x.RefreshToken == dto.RefreshToken);
+
+			if (user == null)
+				return Unauthorized();
+
+			if (user.RefreshTokenExpiryTime <= DateTime.UtcNow)
+				return Unauthorized();
+
+			var newAccessToken = jwtService.GenerateToken(user, await userManager.GetRolesAsync(user));
+			var newRefreshToken = refreshTokenService.GenerateRefreshToken();
+
+			user.RefreshToken = newRefreshToken;
+
+			await userManager.UpdateAsync(user);
+
+			return Ok(new
+			{
+				AccessToken = newAccessToken,
+				RefreshToken = newRefreshToken
+			});
+		}
+
 
 
 		#region add static roles
@@ -117,7 +165,6 @@
 		//}
 		#endregion
 
-		// confirmation email
 		// forget password
 		// refresh token
 	}

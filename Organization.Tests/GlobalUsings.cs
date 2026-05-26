@@ -1,0 +1,15 @@
+﻿global using Microsoft.AspNetCore.Mvc;
+global using Moq;
+global using OriganizationAPI.Controllers;
+global using OriganizationAPI.Data.Contexts;
+global using AutoMapper;
+global using FluentValidation;
+global using OriganizationAPI.Dtos.AccountDtos;
+global using Microsoft.EntityFrameworkCore;
+global using FluentValidation.Results;
+global using Microsoft.AspNetCore.Identity;
+global using OriganizationAPI.Models;
+global using OriganizationAPI.Services;
+global using OriganizationAPI.Dtos.TicketDtos;
+global using OriganizationAPI.Dtos.EventDtos;
+global using OriganizationAPI.Dtos.OrganizerDtos;
