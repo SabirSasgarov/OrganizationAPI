@@ -15,7 +15,14 @@ namespace OriganizationAPI
 			builder.Services.AddSwaggerGen();
 			builder.Services.AddDbContext<AppDbContext>(options =>
 			{
-				options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+				if (builder.Environment.IsEnvironment("Testing"))
+				{
+					options.UseInMemoryDatabase("OrganizationApiTests");
+				}
+				else
+				{
+					options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+				}
 			});
 			builder.Services.AddHttpContextAccessor();
 			builder.Services.AddAutoMapper(opt => opt.AddProfile(new MapperProfile(new HttpContextAccessor())));

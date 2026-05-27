@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
-using Moq;
 namespace Organization.Tests
 {
 	public class TicketControllerTests
@@ -12,10 +10,10 @@ namespace Organization.Tests
 				.UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
 				.Options;
 			var context = new AppDbContext(options);
-			var mapperMock = new Mock<IMapper>();
+			var mapper = TestMapperFactory.Create();
 			var validatorMock = new Mock<IValidator<TicketCreateDto>>();
 
-			var controller = new TicketController(context, validatorMock.Object, mapperMock.Object);
+			var controller = new TicketController(context, validatorMock.Object, mapper);
 
 			// Act
 			var result = await controller.Get();

@@ -10,16 +10,16 @@ namespace Organization.Tests
 				.UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
 				.Options;
 			var context = new AppDbContext(options);
-			var mapperMock = new Mock<IMapper>();
+			var mapper = TestMapperFactory.Create();
 			var validatorMock = new Mock<IValidator<OrganizerCreateDto>>();
 
-			context.Organizers.Add(new OriganizationAPI.Models.Organizer { Id = 1, Name = "Test Organizer 1" });
-			context.Organizers.Add(new OriganizationAPI.Models.Organizer { Id = 2, Name = "Test Organizer 2" });
+			context.Organizers.Add(new OriganizationAPI.Models.Organizer { Id = 1, Name = "Test Organizer 1", Email = "first@example.com" });
+			context.Organizers.Add(new OriganizationAPI.Models.Organizer { Id = 2, Name = "Test Organizer 2", Email = "second@example.com" });
 			await context.SaveChangesAsync();
 
 			// Mocking ProjectTo is complex, typically we just test if Ok Object result returns (Integration tests are better for ProjectTo mapping)
 			// But for unit test flow we will initialize the controller
-			var controller = new OrganizerController(context, mapperMock.Object, validatorMock.Object);
+			var controller = new OrganizerController(context, mapper, validatorMock.Object);
 
 			// Act
 			var result = await controller.Get();

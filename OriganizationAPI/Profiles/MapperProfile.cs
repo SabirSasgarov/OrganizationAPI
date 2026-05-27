@@ -5,14 +5,14 @@
 		public MapperProfile(IHttpContextAccessor httpContextAccessor) 
 		{
 			var request = httpContextAccessor?.HttpContext?.Request;
-			var uriBuilder = new UriBuilder
-			{
-				Scheme = request?.Scheme,
-				Host = request?.Host.Host,
-				Port = request?.Host.Port ?? -1
-			};
-
-			var baseUrl = uriBuilder.Uri.AbsoluteUri;
+			var baseUrl = request == null
+				? string.Empty
+				: new UriBuilder
+				{
+					Scheme = request.Scheme,
+					Host = request.Host.Host,
+					Port = request.Host.Port ?? -1
+				}.Uri.AbsoluteUri;
 			//Event
 			CreateMap<EventCreateDto, Event>()
 				.ForMember(dest => dest.BannerImage, opt => opt.MapFrom(src => src.File!.SaveFile("wwwroot/images/banners")));

@@ -10,10 +10,10 @@ namespace Organization.Tests
 				.UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
 				.Options;
 			var context = new AppDbContext(options);
-			var mapperMock = new Mock<IMapper>();
+			var mapper = TestMapperFactory.Create();
 			var validatorMock = new Mock<IValidator<EventCreateDto>>();
 
-			var controller = new EventsController(context, mapperMock.Object, validatorMock.Object);
+			var controller = new EventsController(context, mapper, validatorMock.Object);
 
 			// Act
 			var result = await controller.Get();
