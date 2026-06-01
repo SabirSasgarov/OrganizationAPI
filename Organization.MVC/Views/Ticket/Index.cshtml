@@ -1,0 +1,29 @@
+﻿@using Organization.MVC.Models
+@model List<TicketViewModel>
+
+<table>
+
+    <thead>
+        <tr>
+            <th>EventId</th>
+            <th>Event Title</th>
+            <th>Type</th>
+            <th>Price</th>
+            <th>Quantity</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.EventId</td>
+                <td>@item.Event?.Title</td>
+                <td>@item.Type</td>
+                <td>@item.Price</td>
+                <td>@item.QuantityAvailable</td>
+            </tr>
+        }
+    </tbody>
+
+</table>

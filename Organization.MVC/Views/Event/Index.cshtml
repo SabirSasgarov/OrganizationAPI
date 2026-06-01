@@ -1,0 +1,35 @@
+﻿@using Organization.MVC.Models
+@model List<EventViewModel>
+
+<table>
+
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Organizer Name</th>
+            <th>Organizer Email</th>
+            <th>Organizer Phone</th>
+            <th>Date</th>
+            <th>Location</th>
+            <th>Tickets Sold</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Title</td>
+                <td>@item.Description</td>
+                <td>@item.Organizer.Name</td>
+                <td>@item.Organizer.Email</td>
+                <td>@item.Organizer.Phone</td>
+                <td>@item.Date</td>
+                <td>@item.Location</td>
+                <td>@item.Tickets?.Count</td>
+            </tr>
+        }
+    </tbody>
+
+</table>

@@ -58,6 +58,7 @@ namespace OriganizationAPI
 					};
 				});
 			builder.Services.AddScoped<JwtService>();
+			builder.Services.AddScoped<RefreshTokenService>();
 			builder.Services.AddSwaggerGen(options =>
 			{
 				options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()

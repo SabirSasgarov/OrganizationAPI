@@ -12,7 +12,7 @@ namespace OriganizationAPI.Controllers
 		IValidator<ForgetPasswordDto> forgetPasswordValidationRules,
 		UserManager<AppUser> userManager,
 		RefreshTokenService refreshTokenService,
-		//RoleManager<IdentityRole> roleManager,
+		RoleManager<IdentityRole> roleManager,
 		JwtService jwtService)
 		: ControllerBase
 	{
@@ -154,18 +154,16 @@ namespace OriganizationAPI.Controllers
 
 
 		#region add static roles
-		//[Authorize(Roles = "Admin")]
-		//[HttpPost("roles")]
-		//public async Task<IActionResult> AddRoles()
-		//{	
-		//	await roleManager.CreateAsync(new IdentityRole { Name = "Admin" });
-		//	await roleManager.CreateAsync(new IdentityRole { Name = "Member" });
+		[Authorize(Roles = "Admin")]
+		[HttpPost("roles")]
+		public async Task<IActionResult> AddRoles()
+		{
+			await roleManager.CreateAsync(new IdentityRole { Name = "Admin" });
+			await roleManager.CreateAsync(new IdentityRole { Name = "Member" });
 
-		//	return Ok("Roles created successfully.");
-		//}
+			return Ok("Roles created successfully.");
+		}
 		#endregion
 
-		// forget password
-		// refresh token
 	}
 }

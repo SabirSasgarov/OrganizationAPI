@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "New Profile",
+    "Projects": [
+      {
+        "Path": "OriganizationAPI\\OriganizationAPI.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "Organization.MVC\\Organization.MVC.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]
