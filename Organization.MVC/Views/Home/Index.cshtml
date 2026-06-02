@@ -1,0 +1,34 @@
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<section class="hero-panel">
+    <div class="hero-copy">
+        <span class="eyebrow">Event operations</span>
+        <h1>Manage events, organizers, and ticket inventory from one clean workspace.</h1>
+        <p>
+            Keep the important pieces visible: upcoming event details, organizer contacts, and available ticket stock.
+        </p>
+        <div class="hero-actions">
+            <a class="btn btn-primary" asp-controller="Event" asp-action="Index">View events</a>
+            <a class="btn btn-secondary" asp-controller="Organizer" asp-action="Index">Browse organizers</a>
+        </div>
+    </div>
+    <div class="summary-grid" aria-label="Dashboard shortcuts">
+        <a class="summary-card" asp-controller="Event" asp-action="Index">
+            <span class="summary-icon">01</span>
+            <strong>Events</strong>
+            <small>Schedules, locations, and ticket totals</small>
+        </a>
+        <a class="summary-card" asp-controller="Organizer" asp-action="Index">
+            <span class="summary-icon">02</span>
+            <strong>Organizers</strong>
+            <small>Contact details for every partner</small>
+        </a>
+        <a class="summary-card" asp-controller="Ticket" asp-action="Index">
+            <span class="summary-icon">03</span>
+            <strong>Tickets</strong>
+            <small>Pricing and available quantity</small>
+        </a>
+    </div>
+</section>

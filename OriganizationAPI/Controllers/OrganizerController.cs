@@ -2,12 +2,13 @@
 {
 	[Route("api/[controller]")]
 	[ApiController]
-	[Authorize(Roles = "Admin")]
+	//[Authorize]
 	public class OrganizerController(AppDbContext context,
 		IMapper mapper,
 		IValidator<OrganizerCreateDto> organizerValidationRules) : ControllerBase
 	{
 		[HttpGet]
+		[Authorize]
 		public async Task<IActionResult> Get()
 		{
 			var organizers = await context.Organizers
@@ -15,7 +16,7 @@
 				.ToListAsync();
 			return Ok(organizers);
 		}
-		[Authorize(Roles = "Admin")]
+		[Authorize(Roles = "Admin, Member")]
 		[HttpPost]
 		public async Task<IActionResult> Post([FromForm] OrganizerCreateDto organizerCreateDto)
 		{

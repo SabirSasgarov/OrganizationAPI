@@ -1,29 +1,41 @@
-﻿@using Organization.MVC.Models
+@using Organization.MVC.Models
 @model List<TicketViewModel>
+@{
+    ViewData["Title"] = "Tickets";
+}
 
-<table>
+<section class="content-section">
+    <div class="section-header">
+        <div>
+            <span class="eyebrow">Inventory</span>
+            <h1>Tickets</h1>
+        </div>
+        <span class="pill">@Model.Count ticket type@(Model.Count == 1 ? "" : "s")</span>
+    </div>
 
-    <thead>
-        <tr>
-            <th>EventId</th>
-            <th>Event Title</th>
-            <th>Type</th>
-            <th>Price</th>
-            <th>Quantity</th>
-
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.EventId</td>
-                <td>@item.Event?.Title</td>
-                <td>@item.Type</td>
-                <td>@item.Price</td>
-                <td>@item.QuantityAvailable</td>
-            </tr>
-        }
-    </tbody>
-
-</table>
+    <div class="table-card">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Event ID</th>
+                    <th>Event Title</th>
+                    <th>Type</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td><span class="code-pill">#@item.EventId</span></td>
+                        <td class="strong-cell">@(item.Event?.Title ?? "Untitled event")</td>
+                        <td>@item.Type</td>
+                        <td>@item.Price.ToString("C")</td>
+                        <td><span class="status-badge">@item.QuantityAvailable</span></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</section>

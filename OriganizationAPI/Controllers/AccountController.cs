@@ -13,6 +13,7 @@ namespace OriganizationAPI.Controllers
 		UserManager<AppUser> userManager,
 		RefreshTokenService refreshTokenService,
 		RoleManager<IdentityRole> roleManager,
+		SignInManager<AppUser> signInManager,
 		JwtService jwtService)
 		: ControllerBase
 	{
@@ -52,20 +53,23 @@ namespace OriganizationAPI.Controllers
 			if (user == null)
 				return BadRequest("Invalid username or password.");
 
+			//to add email confirmation use this code =>
+
+			//if (!user.EmailConfirmed)
+			//	return BadRequest("Verify email first!");
+
 			var passwordValid = await userManager.CheckPasswordAsync(user, loginDto.Password);
 			if (!passwordValid)
 				return BadRequest("Invalid username or password.");
-
-			if (!user.EmailConfirmed)
-				return BadRequest("Verify email first!");
-
+			
 			string tokenString = jwtService.GenerateToken(user, await userManager.GetRolesAsync(user));
 			user.RefreshToken = refreshTokenService.GenerateRefreshToken();
 			user.RefreshTokenExpiryTime = DateTime.UtcNow.AddMinutes(5);
 
 			await userManager.AddToRoleAsync(user, "Member");
 			await userManager.UpdateAsync(user);
-			 
+			await signInManager.SignInAsync(user, passwordValid);
+
 			return Ok(new { Token = tokenString, Refresh = user.RefreshToken });
 		}
 		[Authorize]

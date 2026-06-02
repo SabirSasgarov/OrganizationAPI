@@ -85,6 +85,21 @@ namespace OriganizationAPI
 				});
 			});
 
+			builder.Services.AddCors(options =>
+			{
+				options.AddPolicy("AllowAll",
+					policy =>
+					{
+						policy
+							.AllowAnyOrigin() // frontend URL
+							.AllowAnyHeader()
+							.AllowAnyMethod();
+						//if front end sends any cookies use this
+						//.AllowCredentials();
+						//but this can not be used with allow nay origin so care about that
+					});
+			});
+
 
 			var app = builder.Build();
 			if (app.Environment.IsDevelopment())
@@ -92,7 +107,7 @@ namespace OriganizationAPI
 				app.UseSwagger();
 				app.UseSwaggerUI();
 			}
-
+			app.UseCors("AllowAll");
 			app.UseStaticFiles();
 			app.UseAuthentication();
 			app.UseAuthorization();
