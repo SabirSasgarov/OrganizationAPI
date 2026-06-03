@@ -15,6 +15,18 @@
 
 			return Ok(events);
 		}
+		[HttpGet("{id}")]
+		public async Task<IActionResult> Get(int id)
+		{
+			var eventt = await context.Events
+				.ProjectTo<EventReturnDto>(mapper.ConfigurationProvider)
+				.FirstOrDefaultAsync(e => e.Id == id);
+
+			if (eventt == null) return NotFound("No such event!");
+
+			return Ok(eventt);
+		}
+
 		[Authorize]
 		[HttpPost]
 		public async Task<IActionResult> Post([FromForm] EventCreateDto eventCreateDto)
@@ -56,7 +68,7 @@
 			return Ok();
 		}
 		[HttpGet("{id}/tickets")]
-		public async Task<IActionResult> Get(int id)
+		public async Task<IActionResult> GetTickets(int id)
 		{
 			var existingEvent = await context.Events
 				.Include(e => e.Tickets)
@@ -66,9 +78,9 @@
 			var tickets = existingEvent.Tickets;
 			if (tickets == null && tickets?.Count == 0) return Ok("There is no tickets!");
 
-			var eventReturnDto = mapper.Map<EventReturnDto>(existingEvent);
-
-			return Ok(eventReturnDto);
+			//var eventReturnDto = mapper.Map<EventReturnDto>(existingEvent);
+			var ticketsDto = mapper.Map<List<TicketReturnDto>>(tickets);
+			return Ok(ticketsDto);
 		}
 
 		[HttpGet("{id}/organizer")]
@@ -82,9 +94,10 @@
 			var organizer = existingEvent.Organizer;
 			if (organizer == null) return Ok("There is no organizer for that event!");
 
-			var eventReturnDto = mapper.Map<EventReturnDto>(existingEvent);
+			//var eventReturnDto = mapper.Map<EventReturnDto>(existingEvent);
+			var organizerDto = mapper.Map<OrganizerReturnDto>(organizer);
 
-			return Ok(eventReturnDto);
+			return Ok(organizerDto);
 		}
 		[Authorize]
 		[HttpPost("{id}/tickets")]

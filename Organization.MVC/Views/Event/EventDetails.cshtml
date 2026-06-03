@@ -1,0 +1,98 @@
+@using Organization.MVC.Models.EventViewModels
+@model List<TicketViewModel>
+@using Organization.MVC.Models.TicketViewModels
+@{
+    ViewData["Title"] = "Event Details";
+}
+
+<section class="content-section">
+    <div class="section-header">
+        <div>
+            <span class="eyebrow">Catalog</span>
+            <h1>Event Details</h1>
+        </div>
+        <a asp-action="Index" class="btn btn-secondary">Back to Events</a>
+    </div>
+
+    <div class="detail-card">
+        <div class="event-header">
+            @if (!string.IsNullOrWhiteSpace(ViewBag.BannerImage))
+            {
+                <img src="@ViewBag.BannerImage" alt="Event Banner" class="event-banner" style="width: 100%; max-height: 400px; object-fit: cover; margin-bottom: 20px;" />
+            }
+        </div>
+
+        <div class="event-info">
+            <div class="info-section">
+                <h2>@ViewBag.EventTitle</h2>
+                <p class="info-item">
+                    <strong>Date:</strong>
+                    <span>@ViewBag.EventDate</span>
+                </p>
+                <p class="info-item">
+                    <strong>Location:</strong>
+                    <span>@ViewBag.EventLocation</span>
+                </p>
+                @if (!string.IsNullOrWhiteSpace(ViewBag.EventDescription))
+                {
+                    <p class="info-item">
+                        <strong>Description:</strong>
+                        <span>@ViewBag.EventDescription</span>
+                    </p>
+                }
+            </div>
+
+            <div class="organizer-section">
+                <h3>Organizer Information</h3>
+                <p class="info-item">
+                    <strong>Name:</strong>
+                    <span>@ViewBag.OrganizerName</span>
+                </p>
+                <p class="info-item">
+                    <strong>Email:</strong>
+                    <span><a href="mailto:@ViewBag.OrganizerEmail">@ViewBag.OrganizerEmail</a></span>
+                </p>
+                <p class="info-item">
+                    <strong>Phone:</strong>
+                    <span>@ViewBag.OrganizerPhone</span>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-card">
+        <h3>Available Tickets</h3>
+        @if (Model != null && Model.Count > 0)
+        {
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Price</th>
+                        <th>Available Quantity</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var ticket in Model)
+                    {
+                        <tr>
+                            <td class="strong-cell">@ticket.Type</td>
+                            <td>@ticket.Price.ToString("C")</td>
+                            <td>
+                                <span class="status-badge">@ticket.QuantityAvailable</span>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p class="empty-state">No tickets available for this event.</p>
+        }
+    </div>
+</section>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

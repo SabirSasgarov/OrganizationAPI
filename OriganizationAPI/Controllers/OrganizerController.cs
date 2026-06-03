@@ -16,6 +16,18 @@
 				.ToListAsync();
 			return Ok(organizers);
 		}
+		[HttpGet("{id}")]
+		public async Task<IActionResult> Get(int id)
+		{
+			var organizer = await context.Organizers
+				.Where(e => e.Id == id)
+				.ProjectTo<OrganizerReturnDto>(mapper.ConfigurationProvider)
+				.FirstOrDefaultAsync();
+			if (organizer == null) return NotFound("No such organizer!");
+			return Ok(organizer);
+		}
+
+
 		[Authorize(Roles = "Admin, Member")]
 		[HttpPost]
 		public async Task<IActionResult> Post([FromForm] OrganizerCreateDto organizerCreateDto)
@@ -39,7 +51,7 @@
 			await context.SaveChangesAsync();
 			return Created();
 		}
-		[Authorize(Roles = "Admin")]
+		[Authorize(Roles = "Admin, Member")]
 		[HttpPatch("{id}/logo")]
 		public async Task<IActionResult> Post(int id, IFormFile logo)
 		{
@@ -56,7 +68,7 @@
 		}
 
 		[HttpGet("{id}/events")]
-		public async Task<IActionResult> Get(int id)
+		public async Task<IActionResult> GetEvents(int id)
 		{
 			var existingOrganizer = await context.Organizers
 				.Include(e => e.Events)

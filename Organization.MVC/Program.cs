@@ -1,7 +1,17 @@
+using Organization.MVC.Handlers;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddTransient<AuthTokenHandler>();
+builder.Services.AddHttpClient("ApiClient")
+	.AddHttpMessageHandler<AuthTokenHandler>();
+
+builder.Services.AddHttpClient();
+
 builder.Services.AddHttpClient();
 
 var app = builder.Build();

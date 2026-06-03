@@ -1,0 +1,53 @@
+@using Organization.MVC.Models.OrganizerViewModels
+@model OrganizerViewModel
+@{
+    ViewData["Title"] = "Update Organizer Logo";
+}
+
+<section class="content-section">
+    <div class="section-header">
+        <div>
+            <span class="eyebrow">Partners</span>
+            <h1>Update Organizer Logo</h1>
+        </div>
+    </div>
+
+    <div class="form-card">
+        <div class="organizer-info">
+            <h2>@Model.Name</h2>
+            <p><strong>Email:</strong> <a href="mailto:@Model.Email">@Model.Email</a></p>
+            @if (!string.IsNullOrWhiteSpace(Model.Phone))
+            {
+                <p><strong>Phone:</strong> @Model.Phone</p>
+            }
+            @if (!string.IsNullOrWhiteSpace(Model.LogoUrl))
+            {
+                <div class="logo-preview">
+                    <strong>Current Logo:</strong>
+                    <img src="@Model.LogoUrl" alt="@Model.Name Logo" style="max-width: 200px; max-height: 200px; margin-top: 10px;" />
+                </div>
+            }
+        </div>
+
+        <form method="post" enctype="multipart/form-data" asp-controller="Organizer" asp-action="Update" asp-route-id="@Model.Id">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group">
+                <label for="file" class="form-label">Upload New Logo</label>
+                <input type="file" id="file" name="file" class="form-control" accept="image/*" required />
+                <span class="field-validation text-danger"></span>
+                <small class="form-text">Upload an image file for the organizer logo (required)</small>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Update Logo</button>
+                <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

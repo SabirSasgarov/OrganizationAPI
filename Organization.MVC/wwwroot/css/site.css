@@ -260,6 +260,23 @@ a:hover {
     gap: 1rem;
 }
 
+.header-actions,
+.form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .75rem;
+}
+
+.header-actions {
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.form-actions {
+    align-items: center;
+    justify-content: space-between;
+}
+
 .section-header h1 {
     font-size: clamp(2rem, 3.5vw, 3.4rem);
 }
@@ -431,6 +448,10 @@ a:hover {
     .section-header {
         align-items: flex-start;
         flex-direction: column;
+    }
+
+    .header-actions {
+        justify-content: flex-start;
     }
 
     .nav-links {

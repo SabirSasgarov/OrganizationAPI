@@ -100,7 +100,6 @@ namespace OriganizationAPI
 					});
 			});
 
-
 			var app = builder.Build();
 			if (app.Environment.IsDevelopment())
 			{

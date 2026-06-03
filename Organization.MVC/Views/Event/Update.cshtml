@@ -1,0 +1,55 @@
+@using Organization.MVC.Models.EventViewModels
+@model EventViewModel
+@{
+    ViewData["Title"] = "Update Event Banner";
+}
+
+<section class="content-section">
+    <div class="section-header">
+        <div>
+            <span class="eyebrow">Catalog</span>
+            <h1>Update Event Banner</h1>
+        </div>
+    </div>
+
+    <div class="form-card">
+        <div class="event-info">
+            <h2>@Model.Title</h2>
+            <p><strong>Date:</strong> @Model.Date.ToString("f")</p>
+            <p><strong>Location:</strong> @Model.Location</p>
+            <p><strong>Organizer:</strong> @Model.Organizer.Name</p>
+            @if (!string.IsNullOrWhiteSpace(Model.Description))
+            {
+                <p><strong>Description:</strong> @Model.Description</p>
+            }
+            @if (!string.IsNullOrWhiteSpace(Model.BannerImage))
+            {
+                <div class="banner-preview">
+                    <strong>Current Banner:</strong>
+                    <img src="@Model.BannerImage" alt="@Model.Title Banner" style="max-width: 400px; max-height: 300px; margin-top: 10px;" />
+                </div>
+            }
+        </div>
+
+        <form method="post" enctype="multipart/form-data" asp-controller="Event" asp-action="Update" asp-route-id="@Model.Id">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group">
+                <label for="file" class="form-label">Upload New Banner</label>
+                <input type="file" id="file" name="file" class="form-control" accept="image/*" required />
+                <span class="field-validation text-danger"></span>
+                <small class="form-text">Upload an image file for the event banner (required)</small>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Update Banner</button>
+                <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

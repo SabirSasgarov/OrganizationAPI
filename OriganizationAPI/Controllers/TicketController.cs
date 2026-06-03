@@ -28,7 +28,7 @@
 			}
 
 			var existingEvent = await context.Events.FindAsync(ticketCreateDto.EventId);
-			if (existingEvent != null) return NotFound("There is no such event!");
+			if (existingEvent == null) return NotFound("There is no such event!");
 			foreach (var ticket in existingEvent!.Tickets)
 			{
 				if (ticket.Type == ticketCreateDto.Type)

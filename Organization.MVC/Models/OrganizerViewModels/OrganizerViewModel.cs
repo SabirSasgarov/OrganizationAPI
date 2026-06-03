@@ -1,7 +1,8 @@
-﻿namespace Organization.MVC.Models
+﻿namespace Organization.MVC.Models.OrganizerViewModels
 {
 	public class OrganizerViewModel
 	{
+		public int Id { get; set; }
 		public string Name { get; set; } = null!;
 		public string Email { get; set; } = null!;
 		public string? Phone { get; set; }

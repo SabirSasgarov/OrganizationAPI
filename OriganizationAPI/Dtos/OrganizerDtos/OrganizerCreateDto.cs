@@ -24,7 +24,7 @@
 				.MaximumLength(20).WithMessage("Phone number can not exceed 20 characters!");
 
 			RuleFor(e => e.File)
-				.Must(file => file!.Length < 2 * 1024 * 1024).WithMessage("File can not be greater than 2 MBs!");
+				.Must(file => file == null || file.Length < 2 * 1024 * 1024).WithMessage("File can not be greater than 2 MBs!");
 
 		}
 	}

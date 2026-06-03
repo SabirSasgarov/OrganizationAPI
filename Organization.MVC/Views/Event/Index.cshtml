@@ -1,4 +1,4 @@
-@using Organization.MVC.Models
+@using Organization.MVC.Models.EventViewModels
 @model List<EventViewModel>
 @{
     ViewData["Title"] = "Events";
@@ -10,7 +10,10 @@
             <span class="eyebrow">Catalog</span>
             <h1>Events</h1>
         </div>
-        <span class="pill">@Model.Count event@(Model.Count == 1 ? "" : "s")</span>
+        <div class="header-actions">
+            <span class="pill">@Model.Count event@(Model.Count == 1 ? "" : "s")</span>
+            <a class="btn btn-primary" asp-controller="Event" asp-action="Create">Create event</a>
+        </div>
     </div>
 
     <div class="table-card">
@@ -26,6 +29,7 @@
                     <th>Date</th>
                     <th>Location</th>
                     <th>Tickets</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -51,6 +55,12 @@
                         <td>@item.Date.ToString("MMM dd, yyyy")</td>
                         <td>@item.Location</td>
                         <td><span class="status-badge">@(item.Tickets?.Count ?? 0)</span></td>
+                        <td>
+                            <div class="action-buttons">
+                                <a asp-action="EventDetails" asp-route-id="@item.Id" class="btn btn-sm btn-info" title="View details">View</a>
+                                <a asp-action="Update" asp-route-id="@item.Id" class="btn btn-sm btn-warning" title="Update banner">Edit</a>
+                            </div>
+                        </td>
                     </tr>
                 }
             </tbody>

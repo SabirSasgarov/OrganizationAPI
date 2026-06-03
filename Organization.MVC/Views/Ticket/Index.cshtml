@@ -1,4 +1,4 @@
-@using Organization.MVC.Models
+@using Organization.MVC.Models.TicketViewModels
 @model List<TicketViewModel>
 @{
     ViewData["Title"] = "Tickets";
@@ -10,7 +10,10 @@
             <span class="eyebrow">Inventory</span>
             <h1>Tickets</h1>
         </div>
-        <span class="pill">@Model.Count ticket type@(Model.Count == 1 ? "" : "s")</span>
+        <div class="header-actions">
+            <span class="pill">@Model.Count ticket type@(Model.Count == 1 ? "" : "s")</span>
+            <a class="btn btn-primary" asp-controller="Ticket" asp-action="Create">Create ticket</a>
+        </div>
     </div>
 
     <div class="table-card">
@@ -22,6 +25,7 @@
                     <th>Type</th>
                     <th>Price</th>
                     <th>Quantity</th>
+                    @* <th>Actions</th> *@
                 </tr>
             </thead>
             <tbody>
@@ -33,6 +37,11 @@
                         <td>@item.Type</td>
                         <td>@item.Price.ToString("C")</td>
                         <td><span class="status-badge">@item.QuantityAvailable</span></td>
+                        @* <td>
+                            <div class="action-buttons">
+                                <a asp-action="Create" asp-route-id="@item.EventId" class="btn btn-sm btn-primary" title="Create new ticket">New</a>
+                            </div>
+                        </td> *@
                     </tr>
                 }
             </tbody>

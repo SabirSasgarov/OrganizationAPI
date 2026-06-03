@@ -1,0 +1,53 @@
+@using Organization.MVC.Models.OrganizerViewModels
+@model OrganizerCreateVM
+@{
+    ViewData["Title"] = "Create Organizer";
+}
+
+<section class="auth-shell">
+    <div class="auth-panel">
+        <span class="eyebrow">New partner</span>
+        <h1>Create organizer</h1>
+        <p>Add a partner profile with contact details and an optional logo.</p>
+
+        <form method="post" asp-controller="Organizer" asp-action="Create" enctype="multipart/form-data" class="app-form">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="validation-message"></div>
+
+            <div class="form-group">
+                <label asp-for="Name"></label>
+                <input asp-for="Name" class="form-control" placeholder="Organizer name" />
+                <span asp-validation-for="Name" class="field-validation"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Email"></label>
+                <input asp-for="Email" class="form-control" placeholder="contact@example.com" />
+                <span asp-validation-for="Email" class="field-validation"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Phone"></label>
+                <input asp-for="Phone" class="form-control" placeholder="+994..." />
+                <span asp-validation-for="Phone" class="field-validation"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="File">Logo</label>
+                <input asp-for="File" class="form-control" type="file" accept="image/*" />
+                <span asp-validation-for="File" class="field-validation"></span>
+            </div>
+
+            <div class="form-actions">
+                <a class="btn btn-secondary" asp-controller="Organizer" asp-action="Index">Cancel</a>
+                <button type="submit" class="btn btn-primary">Create organizer</button>
+            </div>
+        </form>
+    </div>
+    <div class="auth-aside">
+        <strong>Organizer profile</strong>
+        <span>Name</span>
+        <span>Email</span>
+        <span>Optional logo</span>
+    </div>
+</section>

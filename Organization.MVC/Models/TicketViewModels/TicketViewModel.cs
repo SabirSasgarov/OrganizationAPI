@@ -1,4 +1,4 @@
-﻿namespace Organization.MVC.Models
+﻿namespace Organization.MVC.Models.TicketViewModels
 {
 	public class TicketViewModel
 	{
