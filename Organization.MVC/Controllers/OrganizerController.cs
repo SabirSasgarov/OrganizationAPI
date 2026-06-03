@@ -27,5 +27,28 @@ namespace Organization.MVC.Controllers
 
 			return View(events);
 		}
+		public async Task<IActionResult> OrganizerEvents(int id)
+		{
+			var token = Request.Cookies["AuthToken"];
+			if (!string.IsNullOrWhiteSpace(token))
+			{
+				_httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+			}
+			else
+			{
+				return RedirectToAction("Login", "Account");
+			}
+			var organizer = await _httpClient.GetFromJsonAsync<OrganizerViewModel>($"http://localhost:5195/api/Organizer/{id}/events");
+
+			if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+			{
+				// Return JSON for AJAX requests
+				return Json(organizer);
+			}
+
+			return View(organizer);
+		}
+
+
 	}
 }
