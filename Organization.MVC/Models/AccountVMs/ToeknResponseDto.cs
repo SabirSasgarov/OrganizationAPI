@@ -1,8 +1,8 @@
 ﻿namespace Organization.MVC.Models.AccountVMs
 {
-	public class ToeknResponseDto
+	public class TokenResponseDto
 	{
-		public string token { get; set; } = null!;
-		public string refresh {  get; set; } = null!;
+		public string accessToken { get; set; } = null!;
+		public string refreshToken {  get; set; } = null!;
 	}
 }

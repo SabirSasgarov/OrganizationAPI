@@ -1,4 +1,6 @@
-﻿namespace OriganizationAPI.Controllers
+﻿using OriganizationAPI.Handler;
+
+namespace OriganizationAPI.Controllers
 {
 	[Route("api/[controller]")]
 	[ApiController]
@@ -14,7 +16,7 @@
 			var organizers = await context.Organizers
 				.ProjectTo<OrganizerReturnDto>(mapper.ConfigurationProvider)
 				.ToListAsync();
-			return Ok(organizers);
+			return Ok(ResponseHandler<List<OrganizerReturnDto>>.SuccessResponse(organizers));
 		}
 		[HttpGet("{id}")]
 		public async Task<IActionResult> Get(int id)
@@ -24,7 +26,7 @@
 				.ProjectTo<OrganizerReturnDto>(mapper.ConfigurationProvider)
 				.FirstOrDefaultAsync();
 			if (organizer == null) return NotFound("No such organizer!");
-			return Ok(organizer);
+			return Ok(ResponseHandler<OrganizerReturnDto>.SuccessResponse(organizer));
 		}
 
 
@@ -49,7 +51,7 @@
 			var organizer = mapper.Map<Organizer>(organizerCreateDto);
 			await context.Organizers.AddAsync(organizer);
 			await context.SaveChangesAsync();
-			return Created();
+			return Ok(ResponseHandler<Organizer>.SuccessResponse(organizer));
 		}
 		[Authorize(Roles = "Admin, Member")]
 		[HttpPatch("{id}/logo")]
@@ -57,14 +59,14 @@
 		{
 			if (logo == null) return BadRequest("Choose a file!");
 			var existingOrganizer = await context.Organizers.FindAsync(id);
-			if (existingOrganizer == null) return NotFound("There is no such organizer with given id!");
+			if (existingOrganizer == null) return NotFound(ResponseHandler<OrganizerReturnDto>.FailureResponse(["There is no such organizer with given id!"]));
 			if (existingOrganizer.LogoUrl != null)
 			{
 				FileExtension.DeleteFile("wwwroot/images/logos", existingOrganizer.LogoUrl);
 			}
 			existingOrganizer.LogoUrl = logo.SaveFile("wwwroot/images/logos");
 			await context.SaveChangesAsync();
-			return Ok();
+			return Ok(ResponseHandler<Organizer>.SuccessResponse(existingOrganizer));
 		}
 
 		[HttpGet("{id}/events")]
@@ -74,13 +76,13 @@
 				.Include(e => e.Events)
 				.FirstOrDefaultAsync(e => e.Id == id);
 
-			if (existingOrganizer == null) return NotFound("No such organizer!");
+			if (existingOrganizer == null) return NotFound(ResponseHandler<OrganizerReturnDto>.FailureResponse(["No such organizer!"]));
 			var events = existingOrganizer.Events;
-			if (events == null && events?.Count == 0) return Ok("There is no events!");
+			if (events == null && events?.Count == 0) return Ok(ResponseHandler<OrganizerReturnDto>.SuccessResponse(new OrganizerReturnDto()));
 
 			var organizerReturnDto = mapper.Map<OrganizerReturnDto>(existingOrganizer);
 
-			return Ok(organizerReturnDto);
+			return Ok(ResponseHandler<OrganizerReturnDto>.SuccessResponse(organizerReturnDto));
 		}
 	}
 }

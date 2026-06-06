@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
+using Organization.MVC.Handlers;
 using Organization.MVC.Models.AccountVMs;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Organization.MVC.Controllers
 {
@@ -8,10 +10,7 @@ namespace Organization.MVC.Controllers
 	{
 		private readonly IHttpClientFactory _httpClientFactory;
 
-		public AccountController(IHttpClientFactory httpClientFactory)
-		{
-			_httpClientFactory = httpClientFactory;
-		}
+		public AccountController(IHttpClientFactory httpClientFactory) => _httpClientFactory = httpClientFactory;
 
 		public IActionResult Register()
 		{
@@ -67,9 +66,10 @@ namespace Organization.MVC.Controllers
 			{
 				TempData["SuccessMessage"] = "Login successful!";
 				var responseContent = await response.Content.ReadAsStringAsync();
-				var tokensResponse = JsonSerializer.Deserialize<ToeknResponseDto>(responseContent);
+				JsonSerializerOptions options = new() { PropertyNameCaseInsensitive = true };
+				var tokensResponse = JsonSerializer.Deserialize<ResponseModel<TokenResponseDto>>(responseContent, options);
 
-				var authToken = tokensResponse?.token.ToString();
+				var authToken = tokensResponse?.Data?.accessToken;
 
 				if (authToken != null && !string.IsNullOrEmpty(authToken))
 				{

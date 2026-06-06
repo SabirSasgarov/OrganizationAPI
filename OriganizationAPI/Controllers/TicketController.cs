@@ -1,4 +1,6 @@
-﻿namespace OriganizationAPI.Controllers
+﻿using OriganizationAPI.Handler;
+
+namespace OriganizationAPI.Controllers
 {
 	[Route("api/[controller]")]
 	[ApiController]
@@ -13,7 +15,7 @@
 			var tickets = await context.Tickets
 				.ProjectTo<TicketReturnDto>(mapper.ConfigurationProvider)
 				.ToListAsync();
-			return Ok(tickets);
+			return Ok(ResponseHandler<List<TicketReturnDto>>.SuccessResponse(tickets));
 		}
 		[HttpPost]
 		public async Task<IActionResult> Post([FromForm] TicketCreateDto ticketCreateDto)
@@ -23,21 +25,21 @@
 				var validationResult = await ticketValidationRules.ValidateAsync(ticketCreateDto);
 				if (!validationResult.IsValid)
 				{
-					return BadRequest(validationResult.Errors);
+					return BadRequest(ResponseHandler<List<TicketReturnDto>>.FailureResponse([.. validationResult.Errors.Select(e => e.ErrorMessage)]));
 				}
 			}
 
 			var existingEvent = await context.Events.FindAsync(ticketCreateDto.EventId);
-			if (existingEvent == null) return NotFound("There is no such event!");
+			if (existingEvent == null) return NotFound(ResponseHandler<List<TicketReturnDto>>.FailureResponse(["There is no such event!"]));
 			foreach (var ticket in existingEvent!.Tickets)
 			{
 				if (ticket.Type == ticketCreateDto.Type)
-					return BadRequest("The type already exists!");
+					return BadRequest(ResponseHandler<List<TicketReturnDto>>.FailureResponse(["The type already exists!"]));
 			}
 			var newTicket = mapper.Map<Ticket>(ticketCreateDto);
 			await context.Tickets.AddAsync(newTicket);
 			await context.SaveChangesAsync();
-			return Created();
+			return Ok(ResponseHandler<TicketReturnDto>.SuccessResponse(mapper.Map<TicketReturnDto>(newTicket)));
 		}
 	}
 }

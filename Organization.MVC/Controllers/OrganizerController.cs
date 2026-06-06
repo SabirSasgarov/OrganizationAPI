@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Organization.MVC.Handlers;
 using Organization.MVC.Models.OrganizerViewModels;
 using System.Net.Http.Headers;
 
@@ -19,8 +20,8 @@ namespace Organization.MVC.Controllers
 			HttpContext.Request.Cookies.TryGetValue("AuthToken", out var authHeader);
 			if (authHeader != null && authHeader != "")
 			{
-				var organizers = await client.GetFromJsonAsync<List<OrganizerViewModel>>("http://localhost:5195/api/Organizer");
-				return View(organizers ?? new List<OrganizerViewModel>());
+				var organizers = await client.GetFromJsonAsync<ResponseModel<List<OrganizerViewModel>>>("http://localhost:5195/api/Organizer");
+				return View(organizers?.Data ?? new List<OrganizerViewModel>());
 			}
 			return RedirectToAction("Login", "Account");
 		}
@@ -76,27 +77,27 @@ namespace Organization.MVC.Controllers
 		{
 			var client = _httpClient;
 
-			var organizer = await client.GetFromJsonAsync<OrganizerViewModel>($"http://localhost:5195/api/Organizer/{id}/events");
+			var organizer = await client.GetFromJsonAsync<ResponseModel<OrganizerViewModel>>($"http://localhost:5195/api/Organizer/{id}/events");
 
 			if (Request.Headers.XRequestedWith == "XMLHttpRequest")
 			{
 				return Json(organizer);
 			}
 
-			return View(organizer);
+			return View(organizer?.Data);
 		}
 		[HttpGet]
 		public async Task<IActionResult> Update(int id)
 		{
 			var client = _httpClient;
-			var organizer = await client.GetFromJsonAsync<OrganizerViewModel>($"http://localhost:5195/api/Organizer/{id}");
+			var organizer = await client.GetFromJsonAsync<ResponseModel<OrganizerViewModel>>($"http://localhost:5195/api/Organizer/{id}");
 
 			if (organizer == null)
 			{
 				return NotFound();
 			}
 
-			return View(organizer);
+			return View(organizer?.Data);
 		}
 
 		[HttpPost]
@@ -104,7 +105,7 @@ namespace Organization.MVC.Controllers
 		public async Task<IActionResult> Update(int id, IFormFile? file)
 		{
 			var client = _httpClient;
-			var organizer = await client.GetFromJsonAsync<OrganizerViewModel>($"http://localhost:5195/api/Organizer/{id}");
+			var organizer = await client.GetFromJsonAsync<ResponseModel<OrganizerViewModel>>($"http://localhost:5195/api/Organizer/{id}");
 
 			if (organizer == null)
 			{
@@ -137,7 +138,7 @@ namespace Organization.MVC.Controllers
 			ModelState.AddModelError(string.Empty, string.IsNullOrWhiteSpace(errorContent)
 				? "An error occurred while updating the organizer."
 				: errorContent);
-			return View(organizer);
+			return View(organizer?.Data);
 		}
 	}
 }

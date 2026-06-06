@@ -1,4 +1,5 @@
 using Microsoft.OpenApi.Models;
+using OriganizationAPI.Middlewares;
 
 namespace OriganizationAPI
 {
@@ -101,6 +102,8 @@ namespace OriganizationAPI
 			});
 
 			var app = builder.Build();
+
+			app.UseMiddleware<ExceptionHandlingMidlleware>();
 			if (app.Environment.IsDevelopment())
 			{
 				app.UseSwagger();

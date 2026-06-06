@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Organization.MVC.Models.OrganizerViewModels;
 
 namespace Organization.MVC.Models.EventViewModels
 {
@@ -15,5 +16,6 @@ namespace Organization.MVC.Models.EventViewModels
 		public IFormFile? File { get; set; }
 		[Required]
 		public int OrganizerId { get; set; }
+		public List<OrganizerViewModel>? Organizers { get; set; }
 	}
 }

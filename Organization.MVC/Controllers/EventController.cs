@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Organization.MVC.Handlers;
 using Organization.MVC.Models.EventViewModels;
 using Organization.MVC.Models.OrganizerViewModels;
 using Organization.MVC.Models.TicketViewModels;
@@ -10,21 +11,28 @@ namespace Organization.MVC.Controllers
 	{
 		private readonly HttpClient _httpClient;
 
-		public EventController(IHttpClientFactory factory)
-		{
-			_httpClient = factory.CreateClient("ApiClient");
-		}
+		public EventController(IHttpClientFactory factory) => _httpClient = factory.CreateClient("ApiClient");
 
 		public async Task<IActionResult> Index()
 		{
-			var events = await _httpClient.GetFromJsonAsync<List<EventViewModel>>("http://localhost:5195/api/Events");
+			var response = await _httpClient.GetFromJsonAsync<ResponseModel<List<EventViewModel>>>("http://localhost:5195/api/Events");
+			if (response == null || !response.Success)
+			{
+				ViewBag.ErrorMessage = response?.Errors?.FirstOrDefault() ?? "An error occurred while fetching events.";
+				return View(new List<EventViewModel>());
+			}
 
-			return View(events);
+			return View(response.Data);
 		}
 		[HttpGet]
-		public IActionResult Create()
+		public async Task<IActionResult> Create()
 		{
-			return View(new EventCreateVM());
+			var organizers = await _httpClient.GetFromJsonAsync<ResponseModel<List<OrganizerViewModel>>>("http://localhost:5195/api/Organizer");
+			var model = new EventCreateVM
+			{
+				Organizers = organizers?.Data ?? []
+			};
+			return View(model);
 		}
 		[HttpPost]
 		public async Task<IActionResult> Create(EventCreateVM model)
@@ -73,30 +81,40 @@ namespace Organization.MVC.Controllers
 		//}
 		public async Task<IActionResult> EventDetails(int id)
 		{
-			var client = _httpClient;
-			var eventt = await client.GetFromJsonAsync<EventViewModel>($"http://localhost:5195/api/Events/{id}");
-			var tickets = await client.GetFromJsonAsync<List<TicketViewModel>>($"http://localhost:5195/api/Events/{id}/tickets");
-			//var organizer = await client.GetFromJsonAsync<OrganizerViewModel>($"http://localhost:5195/api/Events/{id}/organizer");
-			ViewBag.EventTitle = eventt?.Title ?? "Unknown Event";
-			ViewBag.EventDescription = eventt?.Description ?? "No Description";
-			ViewBag.EventDate = eventt?.Date.ToString("f") ?? "No Date";
-			ViewBag.BannerImage = eventt?.BannerImage ?? "/images/default-banner.jpg";
-			ViewBag.EventLocation = eventt?.Location ?? "No Location";
-			ViewBag.OrganizerName = eventt?.Organizer.Name ?? "Unknown Organizer";
-			ViewBag.OrganizerEmail = eventt?.Organizer.Email ?? "No Email";
-			ViewBag.OrganizerPhone = eventt?.Organizer.Phone ?? "No Phone";
+			var eventt = await _httpClient.GetFromJsonAsync<ResponseModel<EventViewModel>>($"http://localhost:5195/api/Events/{id}");
+			var tickets = await _httpClient.GetFromJsonAsync<ResponseModel<List<TicketViewModel>>>($"http://localhost:5195/api/Events/{id}/tickets");
+			if (eventt == null || !eventt.Success)
+			{
+				ViewBag.EventErrorMessage = eventt?.Errors?.FirstOrDefault() ?? "An error occurred while fetching event details.";
+				return NotFound("Event not found.");
+			}
+			if(tickets == null || !tickets.Success)
+			{
+				ViewBag.TicketsErrorMessage = tickets?.Errors?.FirstOrDefault() ?? "An error occurred while fetching tickets.";
+				return View(new List<TicketViewModel>());
+			}
+			ViewBag.EventTitle = eventt?.Data?.Title ?? "Unknown Event";
+			ViewBag.EventDescription = eventt?.Data?.Description ?? "No Description";
+			ViewBag.EventDate = eventt?.Data?.Date.ToString("f") ?? "No Date";
+			ViewBag.BannerImage = eventt?.Data?.BannerImage ?? "/images/default-banner.jpg";
+			ViewBag.EventLocation = eventt?.Data?.Location ?? "No Location";
+			ViewBag.OrganizerName = eventt?.Data?.Organizer.Name ?? "Unknown Organizer";
+			ViewBag.OrganizerEmail = eventt?.Data?.Organizer.Email ?? "No Email";
+			ViewBag.OrganizerPhone = eventt?.Data?.Organizer.Phone ?? "No Phone";
 			if (tickets == null)
 			{
-				return NotFound();
+				return NotFound("Tickets not found.");
 			}
-			return View(tickets);
+			return View(tickets?.Data ?? []);
 		}
 		[HttpGet]
 		public async Task<IActionResult> Update(int id)
 		{
 			var client = _httpClient;
-			var events = await client.GetFromJsonAsync<List<EventViewModel>>("http://localhost:5195/api/Events");
-			var eventItem = events?.FirstOrDefault(e => e.Id == id);
+			var events = await client.GetFromJsonAsync<ResponseModel<List<EventViewModel>>>("http://localhost:5195/api/Events");
+			if(events == null)
+				return NotFound("Events not found.");
+			var eventItem = events?.Data?.FirstOrDefault(e => e.Id == id);
 
 			if (eventItem == null)
 			{
@@ -111,13 +129,13 @@ namespace Organization.MVC.Controllers
 		public async Task<IActionResult> Update(int id, IFormFile? file)
 		{
 			var client = _httpClient;
-			var events = await client.GetFromJsonAsync<List<EventViewModel>>("http://localhost:5195/api/Events");
-			var eventItem = events?.FirstOrDefault(e => e.Id == id);
-
+			var events = await client.GetFromJsonAsync<ResponseModel<List<EventViewModel>>>("http://localhost:5195/api/Events");
+			var eventItem = events?.Data?.FirstOrDefault(e => e.Id == id);
+			if(eventItem == null)
+				return NotFound("Event not found.");
 			if (eventItem == null)
-			{
 				return NotFound();
-			}
+			
 
 			if (file == null || file.Length == 0)
 			{

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Organization.MVC.Models.EventViewModels;
 
 namespace Organization.MVC.Models.TicketViewModels
 {
@@ -14,5 +15,6 @@ namespace Organization.MVC.Models.TicketViewModels
 		[Required]
 		[Range(1,int.MaxValue, ErrorMessage = "Quantity must be greater than 0.")]
 		public int QuantityAvailable { get; set; }
+		public List<EventViewModel>? Events { get; set; }
 	}
 }

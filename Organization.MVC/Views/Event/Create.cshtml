@@ -42,7 +42,9 @@
 
             <div class="form-group">
                 <label asp-for="OrganizerId" class="form-label"></label>
-                <input asp-for="OrganizerId" type="number" class="form-control" placeholder="Enter organizer ID" />
+                <select asp-for="OrganizerId" class="form-control" asp-items="@(new SelectList(Model.Organizers, "Id", "Name"))">
+                    <option value="">-- Select an organizer --</option>
+                </select>
                 <span asp-validation-for="OrganizerId" class="text-danger"></span>
             </div>
 

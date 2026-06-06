@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Organization.MVC.Handlers;
+using Organization.MVC.Models.EventViewModels;
 using Organization.MVC.Models.TicketViewModels;
 
 namespace Organization.MVC.Controllers
@@ -14,14 +16,19 @@ namespace Organization.MVC.Controllers
 
 		public async Task<IActionResult> Index()
 		{
-			var events = await _httpClient.GetFromJsonAsync<List<TicketViewModel>>("http://localhost:5195/api/Ticket");
+			var events = await _httpClient.GetFromJsonAsync<ResponseModel<List<TicketViewModel>>>("http://localhost:5195/api/Ticket");
 
-			return View(events);
+			return View(events?.Data ?? new List<TicketViewModel>());
 		}
 		[HttpGet]
-		public IActionResult Create()
+		public async Task<IActionResult> Create()
 		{
-			return View(new TicketCreateVM());
+			var events = await _httpClient.GetFromJsonAsync<ResponseModel<List<EventViewModel>>>("http://localhost:5195/api/Events");
+			var model = new TicketCreateVM
+			{
+				Events = events?.Data ?? new List<EventViewModel>()
+			};
+			return View(model);
 		}
 		[HttpPost]
 		[ValidateAntiForgeryToken]

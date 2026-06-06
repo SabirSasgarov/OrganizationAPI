@@ -1,4 +1,5 @@
 @using Organization.MVC.Models.TicketViewModels
+@using Organization.MVC.Models.EventViewModels
 @model TicketCreateVM
 @{
     ViewData["Title"] = "Create Ticket";
@@ -18,7 +19,9 @@
 
             <div class="form-group">
                 <label asp-for="EventId" class="form-label"></label>
-                <input asp-for="EventId" type="number" class="form-control" placeholder="Enter event ID" />
+                <select asp-for="EventId" class="form-control" asp-items="@(new SelectList(Model.Events, "Id", "Title"))">
+                    <option value="">-- Select an event --</option>
+                </select>
                 <span asp-validation-for="EventId" class="text-danger"></span>
             </div>
 
